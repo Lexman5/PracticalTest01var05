@@ -14,6 +14,7 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
 
     private TextView textViewOutput;
     private int buttonPressCount = 0; // Contor pentru apăsările butoanelor
+    private static final int BUTTON_PRESS_THRESHOLD = 4; // Prag pentru pornirea serviciului
 
     // Cheile pentru salvarea stării
     private static final String TEXT_VIEW_OUTPUT_KEY = "textViewOutputKey";
@@ -49,7 +50,7 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         buttonBottomLeft.setOnClickListener(buttonClickListener);
         buttonBottomRight.setOnClickListener(buttonClickListener);
 
-        // Setează un OnClickListener pentru a lansa activitatea secundară la apăsarea butonului de navigare
+        // Setează un OnClickListener pentru a lansa activitatea secundară
         buttonNavigateSecondary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,6 +84,11 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         } else {
             textViewOutput.setText(currentText + ", " + text);
         }
+
+        // Pornim serviciul dacă pragul este atins
+        if (buttonPressCount >= BUTTON_PRESS_THRESHOLD) {
+            startService();
+        }
     }
 
     // Funcție pentru a naviga la SecondaryActivity
@@ -108,6 +114,26 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
             // Resetăm TextView și contorul de apăsări
             textViewOutput.setText("");
             buttonPressCount = 0;
+            stopService(); // Oprim serviciul când activitatea revine și resetăm contorul
         }
+    }
+
+    // Metodă pentru a porni serviciul
+    private void startService() {
+        Intent intent = new Intent(this, PracticalTest01Var05Service.class);
+        intent.putExtra("number", buttonPressCount); // Trimitem numărul de apăsări
+        startService(intent);
+    }
+
+    // Metodă pentru a opri serviciul
+    private void stopService() {
+        Intent intent = new Intent(this, PracticalTest01Var05Service.class);
+        stopService(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(); // Oprim serviciul când activitatea este distrusă
     }
 }
