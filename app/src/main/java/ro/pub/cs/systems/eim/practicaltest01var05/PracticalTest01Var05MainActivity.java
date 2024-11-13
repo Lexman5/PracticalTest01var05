@@ -115,7 +115,7 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
 
     // Funcție pentru a naviga la SecondaryActivity
     private void navigateToSecondaryActivity() {
-        Intent intent = new Intent(this, SecondaryActivity.class);
+        Intent intent = new Intent(this, PracticalTest01Var05SecondaryActivity.class);
         intent.putExtra("selected_positions", textViewOutput.getText().toString());
         startActivityForResult(intent, 1);
     }
