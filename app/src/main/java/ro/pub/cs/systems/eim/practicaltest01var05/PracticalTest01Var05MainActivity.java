@@ -15,7 +15,7 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
     private TextView textViewOutput;
     private int buttonPressCount = 0; // Contor pentru apăsările butoanelor
 
-    // Cheile folosite pentru salvarea stării
+    // Cheile pentru salvarea stării
     private static final String TEXT_VIEW_OUTPUT_KEY = "textViewOutputKey";
     private static final String BUTTON_PRESS_COUNT_KEY = "buttonPressCountKey";
 
@@ -24,55 +24,33 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_var05_main);
 
-        // Inițializarea TextView-ului
         textViewOutput = findViewById(R.id.text_view_output);
 
-        // Configurarea butoanelor
+        // Inițializarea butoanelor
         Button buttonTopLeft = findViewById(R.id.button_top_left);
         Button buttonTopRight = findViewById(R.id.button_top_right);
         Button buttonCenter = findViewById(R.id.button_center);
         Button buttonBottomLeft = findViewById(R.id.button_bottom_left);
         Button buttonBottomRight = findViewById(R.id.button_bottom_right);
-        Button buttonNavigate = findViewById(R.id.button_navigate);
+        Button buttonNavigateSecondary = findViewById(R.id.button_navigate_secondary);
 
         // Setarea OnClickListener-urilor pentru fiecare buton
-        buttonTopLeft.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener buttonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateTextView("Top Left");
+                String text = ((Button) v).getText().toString();
+                updateTextView(text);
             }
-        });
+        };
 
-        buttonTopRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateTextView("Top Right");
-            }
-        });
+        buttonTopLeft.setOnClickListener(buttonClickListener);
+        buttonTopRight.setOnClickListener(buttonClickListener);
+        buttonCenter.setOnClickListener(buttonClickListener);
+        buttonBottomLeft.setOnClickListener(buttonClickListener);
+        buttonBottomRight.setOnClickListener(buttonClickListener);
 
-        buttonCenter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateTextView("Center");
-            }
-        });
-
-        buttonBottomLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateTextView("Bottom Left");
-            }
-        });
-
-        buttonBottomRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateTextView("Bottom Right");
-            }
-        });
-
-        // Setarea OnClickListener pentru butonul de navigare
-        buttonNavigate.setOnClickListener(new View.OnClickListener() {
+        // Setează un OnClickListener pentru a lansa activitatea secundară la apăsarea butonului de navigare
+        buttonNavigateSecondary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigateToSecondaryActivity();
@@ -84,27 +62,21 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
             String savedText = savedInstanceState.getString(TEXT_VIEW_OUTPUT_KEY);
             buttonPressCount = savedInstanceState.getInt(BUTTON_PRESS_COUNT_KEY, 0);
             textViewOutput.setText(savedText);
-
-            // Afișează valoarea counter-ului într-un Toast
             Toast.makeText(this, "Button Press Count: " + buttonPressCount, Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Salvarea stării pentru textViewOutput și buttonPressCount
+    // Salvarea stării
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Salvează textul din textViewOutput și contorul buttonPressCount
         outState.putString(TEXT_VIEW_OUTPUT_KEY, textViewOutput.getText().toString());
         outState.putInt(BUTTON_PRESS_COUNT_KEY, buttonPressCount);
     }
 
-    // Funcție pentru a actualiza textul din TextView și a incrementa contorul
+    // Funcție pentru a actualiza TextView și a incrementa contorul
     private void updateTextView(String text) {
-        // Incrementăm contorul pentru fiecare apăsare de buton
         buttonPressCount++;
-
-        // Obține textul existent și adaugă noul text cu virgulă ca delimitator
         String currentText = textViewOutput.getText().toString();
         if (currentText.equals("Select a position") || currentText.isEmpty()) {
             textViewOutput.setText(text);
@@ -116,23 +88,26 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
     // Funcție pentru a naviga la SecondaryActivity
     private void navigateToSecondaryActivity() {
         Intent intent = new Intent(this, PracticalTest01Var05SecondaryActivity.class);
-        intent.putExtra("selected_positions", textViewOutput.getText().toString());
-        startActivityForResult(intent, 1);
+        intent.putExtra("total_button_presses", buttonPressCount);
+        startActivityForResult(intent, 1); // 1 este codul cererii
     }
 
-    // Suprascrie onActivityResult pentru a prelua rezultatul din SecondaryActivity
+    // Suprascrierea onActivityResult pentru a primi rezultatul
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK && data != null) {
-                String result = data.getStringExtra("result");
-                Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
-            } else if (resultCode == RESULT_CANCELED && data != null) {
-                String result = data.getStringExtra("result");
-                Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+        if (requestCode == 1 && data != null) {
+            String result = data.getStringExtra("result");
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Result from SecondaryActivity: " + result, Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Result from SecondaryActivity: " + result, Toast.LENGTH_SHORT).show();
             }
+
+            // Resetăm TextView și contorul de apăsări
+            textViewOutput.setText("");
+            buttonPressCount = 0;
         }
     }
 }

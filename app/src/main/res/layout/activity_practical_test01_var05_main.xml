@@ -95,4 +95,14 @@
         android:text="NAVIGATE TO SECONDARY ACTIVITY"
         android:layout_marginTop="20dp"/>
 
+    <Button
+        android:id="@+id/button_navigate_secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Buton reset"
+        android:layout_marginTop="20dp"/>
+
+
+
 </LinearLayout>
